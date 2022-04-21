@@ -1,8 +1,4 @@
-
-
-//Author: Eduard Le Roux
-import java.awt.Font;
-import java.awt.TextField;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -11,17 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class library extends JFrame {
+    String username= "root";
+    String Password = "root";
 
     TextField text;
 
@@ -29,10 +19,11 @@ public class library extends JFrame {
 
         libraryBackEnd.database();
         int frameWidth = 850;
-        int frameHeight = 700;
+        int frameHeight = 800;
 
         // Initializing variables: buttons, labels, mainframe and textfields
         JFrame mainFrame = new JFrame();
+        mainFrame.getContentPane().setBackground(Color.gray);
         JButton search = new JButton("Search");
         JButton delete = new JButton("Delete");
         JButton update = new JButton("Update");
@@ -46,9 +37,12 @@ public class library extends JFrame {
         final JTextField titleField = new JTextField();
         final JTextField authorField = new JTextField();
         final JTextField qtyField = new JTextField();
+        final JTextField toSearch = new JTextField();
+
 
         final JLabel headLabel = new JLabel("Electronic Bookstore");
-        headLabel.setFont(new Font("Serif", Font.BOLD, 25));
+        headLabel.setFont(new Font("Serif", Font.BOLD, 40));
+
 
         final JLabel idLabel = new JLabel("ID");
         final JLabel titleLabel = new JLabel("Title");
@@ -69,28 +63,54 @@ public class library extends JFrame {
          *
          */
 
-        headLabel.setBounds(300, 5, 400, 40);
+        headLabel.setBounds(230, 5, 400, 40);
 
         // Top 4 labels
-        idLabel.setBounds(30, 50, 100, 40);
-        titleLabel.setBounds(400, 50, 100, 40);
-        authorLabel.setBounds(400, 150, 100, 40);
-        qtyLabel.setBounds(30, 150, 100, 40);
+        idLabel.setBounds(30, 80, 100, 40);
+        idLabel.setBackground(Color.black);
+        idLabel.setFont(new Font("serif", Font.BOLD, 18));
+        titleLabel.setBounds(400, 80, 100, 40);
+        titleLabel.setFont(new Font("serif", Font.BOLD, 18));
+        authorLabel.setBounds(380, 180, 100, 40);
+        authorLabel.setFont(new Font("serif", Font.BOLD, 18));
+        qtyLabel.setBounds(30, 180, 100, 40);
+        qtyLabel.setFont(new Font("serif", Font.BOLD, 18));
 
-        idField.setBounds(100, 50, 220, 40);
-        titleField.setBounds(450, 50, 350, 40);
-        authorField.setBounds(450, 150, 350, 40);
-        qtyField.setBounds(100, 150, 220, 40);
+
+        idField.setBounds(100, 80, 220, 40);
+        titleField.setBounds(450, 80, 350, 40);
+        authorField.setBounds(450, 180, 350, 40);
+        qtyField.setBounds(100, 180, 220, 40);
+        toSearch.setBounds(100 , 650 , 250, 40 );
+
 
         // buttons on the right
         exit.setBounds(700, 15, 100, 20);
-        clearAll.setBounds(700, 200, 100, 40);
-        viewItem.setBounds(700, 260, 100, 40);
-        viewAll.setBounds(700, 320, 100, 40);
-        add.setBounds(700, 380, 100, 40);
-        update.setBounds(700, 440, 100, 40);
-        delete.setBounds(700, 500, 100, 40);
-        search.setBounds(700, 560, 100, 40);
+        exit.setBackground(Color.black);
+        exit.setForeground(Color.white);
+        clearAll.setBounds(700, 250, 100, 40);
+        clearAll.setForeground(Color.white);
+        clearAll.setBackground(Color.black);
+        viewItem.setBounds(700, 310, 100, 40);
+        viewItem.setForeground(Color.white);
+        viewItem.setBackground(Color.black);
+        viewAll.setBackground(Color.black);
+        viewAll.setForeground(Color.white);
+        viewAll.setBounds(700, 370, 100, 40);
+
+        add.setBounds(700, 430, 100, 40);
+        add.setBackground(Color.black);
+        add.setForeground(Color.white);
+        update.setBounds(700, 490, 100, 40);
+        update.setForeground(Color.white);
+        update.setBackground(Color.black);
+        delete.setBounds(700, 550, 100, 40);
+        delete.setBackground(Color.black);
+        delete.setForeground(Color.white);
+        search.setBounds(330, 650, 100, 40);
+        search.setForeground(Color.white);
+        search.setBackground(Color.black);
+
 // Actionlisteners for when the user clicks on any of the buttons
 
         /*
@@ -121,16 +141,49 @@ public class library extends JFrame {
          */
         search.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String s =toSearch.getText();
+                String Author="";
+                Boolean Check= true;
+                try{
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebook", username, Password);
+                    Statement st = c.createStatement();
+                    ResultSet set=st.executeQuery("Select * from books where id ="+Integer.parseInt(s));
+                    System.out.println(s);
 
-                try {
-                    listOfBooks.setModel(libraryBackEnd.search(Integer.parseInt(idField.getText()),
-                            authorField.getText(), titleField.getText(), Integer.parseInt(qtyField.getText())));
-                } catch (NumberFormatException e1) {
-                    e1.printStackTrace();
-                } catch (SQLException e1) {
-//                    e1.printStackTrace();
-                    System.err.println(e1);
+                    while(set.next()){
+                        int id = set.getInt("id");
+                        Author= set.getString("Author");
+                        int Year= set.getInt("qty");
+                        String title = set.getString("Title");
+                        String totaldata="ID :"+id+"\nAuthor :"+Author+" \nPublishing Year :"+Year+"\nTitle :"+title;
+                        Check=false;
+                        System.out.println(s);
+                        JOptionPane.showMessageDialog(null,totaldata);
+
+                        System.out.println(totaldata);
+                    }
+                    if(Check){
+                        JOptionPane.showMessageDialog(null,"Record not Found ","Error",JOptionPane.ERROR_MESSAGE);
+                    }
+
                 }
+                catch (Exception a){
+                    System.out.println(a);
+                    JOptionPane.showMessageDialog(null,"Please Enter Valid  ","Error",JOptionPane.WARNING_MESSAGE);
+
+                }
+
+
+//                try {
+//                    listOfBooks.setModel(libraryBackEnd.search(Integer.parseInt(idField.getText()),
+//                            authorField.getText(), titleField.getText(), Integer.parseInt(qtyField.getText())));
+//                } catch (NumberFormatException e1) {
+//                    e1.printStackTrace();
+//                } catch (SQLException e1) {
+////                    e1.printStackTrace();
+//                    System.err.println(e1);
+//                }
             }
         });
 
@@ -284,6 +337,7 @@ public class library extends JFrame {
         mainFrame.add(titleField);
         mainFrame.add(authorField);
         mainFrame.add(qtyField);
+        mainFrame.add(toSearch);
 
         mainFrame.add(idLabel);
         mainFrame.add(titleLabel);
@@ -311,7 +365,7 @@ public class library extends JFrame {
         try {
 
             System.out.println("Establishing connection...");
-            Class.forName("com.mysql.jdbc.Driver");
+            //  Class.forName("com.mysql.jdbc.Driver");
             Connection database = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "");
             System.out.println("Establishing statement...");
             Statement stateMent = database.createStatement();

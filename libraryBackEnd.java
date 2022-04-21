@@ -66,7 +66,7 @@ public class libraryBackEnd {
      */
     public static void add(int id, String author, String title, int qty) throws SQLIntegrityConstraintViolationException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection database = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebook",
                     userName, password);
             Statement stateMent = database.createStatement();
@@ -82,7 +82,7 @@ public class libraryBackEnd {
             System.out.println(prepareStatement + " records inserted.\n");
         } catch (Exception e) {
             JOptionPane.showMessageDialog (null, "Duplicate entry not allowed!");
-            e.printStackTrace();
+
 
         }
     }
